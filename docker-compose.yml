@@ -18,6 +18,12 @@ services:
       - mongodb_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: lastsaas
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
     restart: unless-stopped
 
   postgres:
@@ -48,7 +54,8 @@ services:
       SERVER_PORT: "4290"
       FRONTEND_URL: http://72.61.28.108:8090
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     restart: unless-stopped
 
   # ─── BrightBean (Django app) ────────────────────────────────────────────────
