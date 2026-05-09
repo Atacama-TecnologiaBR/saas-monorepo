@@ -18,7 +18,7 @@ RUN npm run build
 
 # Stage 3: Runtime
 FROM alpine:3.21
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates netcat-openbsd
 WORKDIR /app
 
 # Copy backend binary
@@ -30,7 +30,11 @@ COPY backend/config/prod.yaml ./config/prod.yaml
 # Copy frontend dist
 COPY --from=frontend-builder /build/dist ./static
 
-ENV LASTSAAS_ENV=prod
-EXPOSE 8080
+# Copy wait script
+COPY wait-for-mongo.sh ./wait-for-mongo.sh
+RUN chmod +x ./wait-for-mongo.sh
 
-CMD ["./lastsaas"]
+ENV LASTSAAS_ENV=prod
+EXPOSE 4290
+
+CMD ["./wait-for-mongo.sh", "./lastsaas"]
