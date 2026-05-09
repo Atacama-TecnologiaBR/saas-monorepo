@@ -7,7 +7,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     environment:
-      NGINX_ENVOY: "1"
+      NGINX_ENVOY: "2"
     depends_on:
       - lastsaas
       - brightbean
