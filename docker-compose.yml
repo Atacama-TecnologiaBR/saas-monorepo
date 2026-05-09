@@ -18,11 +18,6 @@ services:
       - mongodb_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: lastsaas
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     restart: unless-stopped
 
   postgres:
@@ -51,8 +46,7 @@ services:
       SERVER_PORT: "4290"
       FRONTEND_URL: http://72.61.28.108:8090
     depends_on:
-      mongodb:
-        condition: service_healthy
+      - mongodb
     restart: unless-stopped
 
   # ─── BrightBean (Django app) ────────────────────────────────────────────────
@@ -65,8 +59,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/brightbean
       LASTSAAS_JWT_SECRET: ${JWT_ACCESS_SECRET}
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     restart: unless-stopped
 
   # ─── BrightBean (background worker) ────────────────────────────────────────
@@ -74,14 +67,13 @@ services:
     build:
       context: ./brightbean
       dockerfile: Dockerfile
-    command: ["/bin/sh", "-c", "python manage.py process_tasks"]
+    command: ["/bin/sh", "-c", "sleep 15 && python manage.py process_tasks"]
     env_file: .env
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/brightbean
       LASTSAAS_JWT_SECRET: ${JWT_ACCESS_SECRET}
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     restart: unless-stopped
 
 volumes:
