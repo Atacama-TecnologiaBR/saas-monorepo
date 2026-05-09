@@ -49,7 +49,7 @@ services:
       context: ./lastsaas
       dockerfile: Dockerfile
       no_cache: true
-    command: ["sh", "-c", "sleep 5 && ./lastsaas setup --org 'Atacama Tecnologia' --name 'Admin' --email 'atacamatecnologia@gmail.com' --password 'Atacama@2026!' ; ./lastsaas"]
+    command: ["sh", "-c", "sleep 5 && ./lastsaas-cli setup --org 'Atacama Tecnologia' --name 'Admin' --email 'atacamatecnologia@gmail.com' --password 'Atacama@2026!' ; ./lastsaas"]
     ports:
       - "4290:4290"
     env_file: .env
