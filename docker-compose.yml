@@ -6,6 +6,8 @@ services:
       - "8090:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    environment:
+      NGINX_ENVOY: "1"
     depends_on:
       - lastsaas
       - brightbean
@@ -46,7 +48,6 @@ services:
     build:
       context: ./lastsaas
       dockerfile: Dockerfile
-      no_cache: true
     command: ["sh", "-c", "sleep 5 && ./lastsaas"]
     ports:
       - "4290:4290"
