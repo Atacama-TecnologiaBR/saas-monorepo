@@ -1,0 +1,28 @@
+.env
+*.env.local
+*.log
+
+# LastSaaS
+lastsaas/backend/config/dev.yaml
+lastsaas/backend/config/prod.yaml
+lastsaas/.env
+
+# BrightBean
+brightbean/.env
+brightbean/media/
+brightbean/staticfiles/
+
+# Node
+node_modules/
+lastsaas/frontend/node_modules/
+lastsaas/frontend/dist/
+
+# Go
+lastsaas/backend/lastsaas
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
