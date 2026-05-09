@@ -214,6 +214,13 @@ Install MongoDB Community Edition and set database.uri to:
 // --- setup command ---
 
 func cmdSetup() {
+	fs := flag.NewFlagSet("setup", flag.ExitOnError)
+	orgFlag := fs.String("org", "", "Organization name (non-interactive)")
+	nameFlag := fs.String("name", "", "Your display name (non-interactive)")
+	emailFlag := fs.String("email", "", "Email address (non-interactive)")
+	passwordFlag := fs.String("password", "", "Password (non-interactive)")
+	fs.Parse(os.Args[2:])
+
 	database, cfg, cleanup := connectDB()
 	defer cleanup()
 
@@ -245,28 +252,43 @@ func cmdSetup() {
 		os.Exit(0)
 	}
 
-	fmt.Println("=== LastSaaS Initial Setup ===")
-	fmt.Println()
-
-	reader := bufio.NewReader(os.Stdin)
-
-	orgName := prompt(reader, "Organization name")
-	displayName := prompt(reader, "Your name")
-	email := prompt(reader, "Email address")
-	email = strings.TrimSpace(strings.ToLower(email))
-
-	if orgName == "" || displayName == "" || email == "" {
-		fmt.Fprintln(os.Stderr, "All fields are required.")
-		os.Exit(1)
-	}
-
 	passwordService := auth.NewPasswordService()
 
-	password := promptPassword("Password")
-	confirm := promptPassword("Confirm password")
+	var orgName, displayName, email, password string
 
-	if password != confirm {
-		fmt.Fprintln(os.Stderr, "Passwords do not match.")
+	// Non-interactive mode: all flags provided
+	if *orgFlag != "" && *nameFlag != "" && *emailFlag != "" && *passwordFlag != "" {
+		orgName = strings.TrimSpace(*orgFlag)
+		displayName = strings.TrimSpace(*nameFlag)
+		email = strings.TrimSpace(strings.ToLower(*emailFlag))
+		password = *passwordFlag
+	} else {
+		fmt.Println("=== LastSaaS Initial Setup ===")
+		fmt.Println()
+
+		reader := bufio.NewReader(os.Stdin)
+
+		orgName = prompt(reader, "Organization name")
+		displayName = prompt(reader, "Your name")
+		email = prompt(reader, "Email address")
+		email = strings.TrimSpace(strings.ToLower(email))
+
+		if orgName == "" || displayName == "" || email == "" {
+			fmt.Fprintln(os.Stderr, "All fields are required.")
+			os.Exit(1)
+		}
+
+		password = promptPassword("Password")
+		confirm := promptPassword("Confirm password")
+
+		if password != confirm {
+			fmt.Fprintln(os.Stderr, "Passwords do not match.")
+			os.Exit(1)
+		}
+	}
+
+	if orgName == "" || displayName == "" || email == "" || password == "" {
+		fmt.Fprintln(os.Stderr, "All fields are required.")
 		os.Exit(1)
 	}
 
