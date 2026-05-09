@@ -9,7 +9,6 @@ services:
     depends_on:
       - lastsaas
       - brightbean
-      - frontend
     restart: unless-stopped
 
   # ─── Databases ──────────────────────────────────────────────────────────────
@@ -19,8 +18,6 @@ services:
       - mongodb_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: lastsaas
-    ports:
-      - "27017:27017"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -36,8 +33,6 @@ services:
       POSTGRES_DB: brightbean
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -45,7 +40,7 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # ─── LastSaaS (Go backend) ──────────────────────────────────────────────────
+  # ─── LastSaaS (Go backend + React frontend embutido) ────────────────────────
   lastsaas:
     build:
       context: ./lastsaas
@@ -54,17 +49,10 @@ services:
     environment:
       SERVER_HOST: 0.0.0.0
       SERVER_PORT: "4290"
-      FRONTEND_URL: http://localhost
+      FRONTEND_URL: http://72.61.28.108
     depends_on:
       mongodb:
         condition: service_healthy
-    restart: unless-stopped
-
-  # ─── LastSaaS (React frontend) ─────────────────────────────────────────────
-  frontend:
-    build:
-      context: ./lastsaas/frontend
-      dockerfile: Dockerfile.frontend
     restart: unless-stopped
 
   # ─── BrightBean (Django app) ────────────────────────────────────────────────

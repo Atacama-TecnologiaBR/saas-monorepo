@@ -4,7 +4,6 @@
 
 # LastSaaS
 lastsaas/backend/config/dev.yaml
-lastsaas/backend/config/prod.yaml
 lastsaas/.env
 
 # BrightBean
