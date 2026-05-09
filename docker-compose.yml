@@ -1,9 +1,9 @@
 services:
-  # ─── Proxy ──────────────────────────────────────────────────────────────────
+  # ─── Proxy interno (roteia /social → BrightBean, / → LastSaaS) ─────────────
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "8090:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -49,7 +49,7 @@ services:
     environment:
       SERVER_HOST: 0.0.0.0
       SERVER_PORT: "4290"
-      FRONTEND_URL: http://72.61.28.108
+      FRONTEND_URL: http://72.61.28.108:8090
     depends_on:
       mongodb:
         condition: service_healthy
@@ -74,7 +74,7 @@ services:
     build:
       context: ./brightbean
       dockerfile: Dockerfile
-    command: python manage.py process_tasks
+    command: ["/bin/sh", "-c", "python manage.py process_tasks"]
     env_file: .env
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/brightbean
