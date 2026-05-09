@@ -153,12 +153,9 @@ export default function Layout() {
                     </Link>
                   ))}
                   <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const token = localStorage.getItem('lastsaas_access_token') ?? '';
-                      window.open(`/social/sso/?token=${encodeURIComponent(token)}&next=/`, '_blank');
-                    }}
+                    href="/social/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-dark-400 hover:text-white hover:bg-dark-800/50"
                   >
                     <Share2 className="w-4 h-4" />
